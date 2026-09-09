@@ -1,0 +1,278 @@
+// FlowLedger Prisma Schema - PostgreSQL Production Target (Supabase / Neon / Render / Railway)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("SALES") // ADMIN, SALES, WAREHOUSE, ACCOUNTS
+  avatar       String?
+  phone        String?
+  department   String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customerNotes     CustomerNote[]
+  assignedFollowUps FollowUp[]       @relation("AssignedFollowUps")
+  stockMovements    StockMovement[]  @relation("CreatedMovements")
+  createdChallans   SalesChallan[]   @relation("CreatedChallans")
+  confirmedChallans SalesChallan[]   @relation("ConfirmedChallans")
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Customer {
+  id           String    @id @default(cuid())
+  name         String
+  mobile       String
+  email        String?
+  businessName String
+  gstNumber    String?
+  customerType String    @default("WHOLESALE") // RETAIL, WHOLESALE, DISTRIBUTOR
+  address      String
+  city         String
+  state        String
+  pincode      String?
+  status       String    @default("ACTIVE") // LEAD, ACTIVE, INACTIVE
+  followUpDate DateTime?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  customerNotes CustomerNote[]
+  followUps     FollowUp[]
+  salesChallans SalesChallan[]
+
+  @@index([mobile])
+  @@index([email])
+  @@index([gstNumber])
+  @@index([businessName])
+  @@index([status])
+  @@index([customerType])
+}
+
+model CustomerNote {
+  id         String   @id @default(cuid())
+  customerId String
+  authorId   String
+  note       String
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  author   User     @relation(fields: [authorId], references: [id])
+
+  @@index([customerId])
+  @@index([authorId])
+}
+
+model FollowUp {
+  id           String   @id @default(cuid())
+  customerId   String
+  assignedToId String
+  reason       String
+  dueDate      DateTime
+  priority     String   @default("MEDIUM") // HIGH, MEDIUM, LOW
+  status       String   @default("PENDING") // PENDING, COMPLETED, RESCHEDULED
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  assignedTo User     @relation("AssignedFollowUps", fields: [assignedToId], references: [id])
+
+  @@index([customerId])
+  @@index([assignedToId])
+  @@index([dueDate])
+  @@index([status])
+  @@index([priority])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  code        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products Product[]
+
+  @@index([name])
+}
+
+model Warehouse {
+  id            String   @id @default(cuid())
+  name          String
+  code          String   @unique
+  address       String
+  city          String
+  state         String
+  pincode       String?
+  contactPerson String?
+  contactPhone  String?
+  capacity      Int      @default(10000)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  products       Product[]
+  stockMovements StockMovement[]
+
+  @@index([code])
+}
+
+model Product {
+  id               String   @id @default(cuid())
+  name             String
+  sku              String   @unique
+  categoryId       String
+  unitPrice        Float
+  currentStock     Int      @default(0)
+  minStockQuantity Int      @default(10)
+  warehouseId      String
+  unit             String   @default("PCS")
+  imageUrl         String?
+  description      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  category       Category           @relation(fields: [categoryId], references: [id])
+  warehouse      Warehouse          @relation(fields: [warehouseId], references: [id])
+  stockMovements StockMovement[]
+  challanItems   SalesChallanItem[]
+
+  @@index([sku])
+  @@index([name])
+  @@index([categoryId])
+  @@index([warehouseId])
+  @@index([currentStock])
+}
+
+model StockMovement {
+  id              String   @id @default(cuid())
+  productId       String
+  warehouseId     String
+  quantity        Int
+  movementType    String   // IN, OUT
+  reason          String   // PURCHASE_RECEIVED, SALES_CHALLAN, MANUAL_ADJUSTMENT, STOCK_RETURN, DAMAGED_WRITE_OFF
+  referenceNumber String?
+  challanId       String?
+  createdById     String
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouse Warehouse     @relation(fields: [warehouseId], references: [id])
+  challan   SalesChallan? @relation(fields: [challanId], references: [id])
+  createdBy User          @relation("CreatedMovements", fields: [createdById], references: [id])
+
+  @@index([productId])
+  @@index([warehouseId])
+  @@index([challanId])
+  @@index([movementType])
+  @@index([reason])
+  @@index([createdAt])
+}
+
+model SalesChallan {
+  id                 String    @id @default(cuid())
+  challanNumber      String    @unique
+  customerId         String
+  status             String    @default("DRAFT") // DRAFT, CONFIRMED, CANCELLED
+  totalQuantity      Int       @default(0)
+  subTotal           Float     @default(0)
+  taxRate            Float     @default(18.0)
+  taxAmount          Float     @default(0)
+  grandTotal         Float     @default(0)
+  notes              String?
+  terms              String?
+  dispatchThrough    String?
+  vehicleNumber      String?
+  createdById        String
+  confirmedById      String?
+  confirmedAt        DateTime?
+  cancelledById      String?
+  cancelledAt        DateTime?
+  cancellationReason String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  customer       Customer           @relation(fields: [customerId], references: [id])
+  createdBy      User               @relation("CreatedChallans", fields: [createdById], references: [id])
+  confirmedBy    User?              @relation("ConfirmedChallans", fields: [confirmedById], references: [id])
+  items          SalesChallanItem[]
+  stockMovements StockMovement[]
+
+  @@index([challanNumber])
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model SalesChallanItem {
+  id                  String   @id @default(cuid())
+  challanId           String
+  productId           String
+  productNameSnapshot String
+  skuSnapshot         String
+  unitPriceSnapshot   Float
+  quantity            Int
+  lineTotal           Float
+  createdAt           DateTime @default(now())
+
+  challan SalesChallan @relation(fields: [challanId], references: [id], onDelete: Cascade)
+  product Product      @relation(fields: [productId], references: [id])
+
+  @@index([challanId])
+  @@index([productId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String?
+  title     String
+  message   String
+  type      String   @default("SYSTEM")
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  userName    String?
+  action      String
+  entity      String
+  entityId    String?
+  detailsJson String?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+}

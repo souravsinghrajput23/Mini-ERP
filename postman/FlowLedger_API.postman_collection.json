@@ -1,0 +1,310 @@
+{
+  "info": {
+    "_postman_id": "8f8b3c9a-1122-4433-8899-flowledger001",
+    "name": "FlowLedger Mini ERP + CRM Operations API",
+    "description": "Production REST API Collection for FlowLedger Operations Engine",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api", "type": "string" },
+    { "key": "authToken", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@flowledger.io\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (Sales Rep)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sales@flowledger.io\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Current User Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "List System Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/users", "host": ["{{baseUrl}}"], "path": ["auth", "users"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard & Analytics",
+      "item": [
+        {
+          "name": "Get Operations KPIs & Charts",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/dashboard/stats", "host": ["{{baseUrl}}"], "path": ["dashboard", "stats"] }
+          }
+        },
+        {
+          "name": "Get Smart Action Alerts",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/dashboard/alerts", "host": ["{{baseUrl}}"], "path": ["dashboard", "alerts"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "CRM Customers",
+      "item": [
+        {
+          "name": "List Customers (with search & filters)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/customers?customerType=WHOLESALE&status=ACTIVE&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["customers"],
+              "query": [
+                { "key": "customerType", "value": "WHOLESALE" },
+                { "key": "status", "value": "ACTIVE" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Customer 360 Deep View",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/customers/:id/360", "host": ["{{baseUrl}}"], "path": ["customers", ":id", "360"] }
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rajesh Agrawal\",\n  \"businessName\": \"Apex Engineering Allied Corp\",\n  \"mobile\": \"+91 98200 88991\",\n  \"email\": \"contact@apexallied.in\",\n  \"gstNumber\": \"27AABCA1234F1Z5\",\n  \"customerType\": \"WHOLESALE\",\n  \"address\": \"MIDC Industrial Phase 2, Turbhe\",\n  \"city\": \"Navi Mumbai\",\n  \"state\": \"Maharashtra\",\n  \"pincode\": \"400705\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers", "host": ["{{baseUrl}}"], "path": ["customers"] }
+          }
+        },
+        {
+          "name": "Add Customer Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Discussed 60-day credit term extension based on quarterly ₹10L volume guarantee.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/:id/notes", "host": ["{{baseUrl}}"], "path": ["customers", ":id", "notes"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Smart Follow-ups",
+      "item": [
+        {
+          "name": "List Follow-ups (Overdue / Today / Upcoming)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/followups?timeframe=today&priority=HIGH",
+              "host": ["{{baseUrl}}"],
+              "path": ["followups"],
+              "query": [
+                { "key": "timeframe", "value": "today" },
+                { "key": "priority", "value": "HIGH" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Follow-up Status (Complete / Reschedule)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"COMPLETED\",\n  \"notes\": \"Signed contract copy collected.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/followups/:id/status", "host": ["{{baseUrl}}"], "path": ["followups", ":id", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products & Inventory",
+      "item": [
+        {
+          "name": "List Product Catalog & Inventory Health",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/products?health=CRITICAL",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"],
+              "query": [{ "key": "health", "value": "CRITICAL" }]
+            }
+          }
+        },
+        {
+          "name": "Adjust Stock / Inward PO Receipt",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"cmtu0rqwk001vaz2fa4zfl29d\",\n  \"quantity\": 50,\n  \"movementType\": \"IN\",\n  \"reason\": \"PURCHASE_RECEIVED\",\n  \"referenceNumber\": \"PO-2026-9042\",\n  \"notes\": \"Inward stock replenishment from vendor Siemens Ltd.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/inventory/adjust", "host": ["{{baseUrl}}"], "path": ["inventory", "adjust"] }
+          }
+        },
+        {
+          "name": "Get Stock Movement Ledger",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/inventory/movements", "host": ["{{baseUrl}}"], "path": ["inventory", "movements"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sales Challans",
+      "item": [
+        {
+          "name": "Live Stock Preview Check",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"productId\": \"cmtu0rqwk001vaz2fa4zfl29d\",\n      \"quantity\": 20\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/challans/preview-stock", "host": ["{{baseUrl}}"], "path": ["challans", "preview-stock"] }
+          }
+        },
+        {
+          "name": "Create Sales Challan (Draft / Confirmed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"cmtu0rqtc000qaz2fkzwh4184\",\n  \"status\": \"DRAFT\",\n  \"items\": [\n    {\n      \"productId\": \"cmtu0rqwk001vaz2fa4zfl29d\",\n      \"quantity\": 10,\n      \"unitPrice\": 1450\n    }\n  ],\n  \"dispatchThrough\": \"V-Trans Express\",\n  \"vehicleNumber\": \"MH-04-GP-8891\",\n  \"notes\": \"Site delivery at Turbhe workshop\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/challans", "host": ["{{baseUrl}}"], "path": ["challans"] }
+          }
+        },
+        {
+          "name": "Confirm Sales Challan (Atomic Stock Deduction)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/challans/:id/confirm", "host": ["{{baseUrl}}"], "path": ["challans", ":id", "confirm"] }
+          }
+        },
+        {
+          "name": "Cancel Sales Challan (Atomic Stock Restoral)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Client project postponed. Restored inventory to Bhiwandi Hub.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/challans/:id/cancel", "host": ["{{baseUrl}}"], "path": ["challans", ":id", "cancel"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Global Search & Audit Logs",
+      "item": [
+        {
+          "name": "Global Command Search (across all entities)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/search?q=Bharat",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"],
+              "query": [{ "key": "q", "value": "Bharat" }]
+            }
+          }
+        },
+        {
+          "name": "Get Audit Activity Logs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/audit-logs", "host": ["{{baseUrl}}"], "path": ["audit-logs"] }
+          }
+        },
+        {
+          "name": "System Setup & Master Info",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/settings", "host": ["{{baseUrl}}"], "path": ["settings"] }
+          }
+        }
+      ]
+    }
+  ]
+}

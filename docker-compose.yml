@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (Optional for Production; SQLite is used locally out-of-the-box)
+  postgres:
+    image: postgres:16-alpine
+    container_name: flowledger_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: flowledger_secure_password_2026
+      POSTGRES_DB: flowledger_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Backend REST API Server
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flowledger_api
+    restart: always
+    environment:
+      PORT: 5000
+      NODE_ENV: production
+      DATABASE_URL: "file:./dev.db" # Or "postgresql://postgres:flowledger_secure_password_2026@postgres:5432/flowledger_db?schema=public"
+      JWT_SECRET: "flowledger_jwt_super_secret_production_key_2026_operations"
+      JWT_EXPIRES_IN: "7d"
+      CORS_ORIGIN: "http://localhost:5173"
+      COMPANY_NAME: "FlowLedger Technologies India Pvt Ltd"
+      COMPANY_GST: "27AABCU9603R1ZM"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server/prisma/dev.db:/app/dev.db
+
+  # Frontend Client
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: flowledger_web
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
