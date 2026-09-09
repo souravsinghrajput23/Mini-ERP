@@ -2,7 +2,27 @@
 
 > **"Every sale. Every stock movement. One clear workflow."**
 
-FlowLedger is a modern B2B SaaS Operations Command Center and Mini ERP + CRM portal designed for wholesale, manufacturing, and distribution enterprises. Built with **React 19, TypeScript, Vite, Tailwind CSS, Node.js, Express, Prisma ORM, and PostgreSQL**, it eliminates disjointed spreadsheets by connecting customer relationship workflows, multi-warehouse inventory ledgers, and atomic sales challan fulfillment.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://mini-erp-client-ten.vercel.app/)
+[![API Status](https://img.shields.io/badge/Backend%20API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://mini-erp-vp18.onrender.com/api/health)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/souravsinghrajput23/Mini-ERP)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Prisma ORM](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+
+---
+
+## 🌐 Live Deployments
+
+| Resource | URL | Status |
+| :--- | :--- | :--- |
+| **🚀 Production Web App** | **[https://mini-erp-client-ten.vercel.app](https://mini-erp-client-ten.vercel.app/)** | `Active` (Vercel CDN) |
+| **⚙️ Live Backend API** | **[https://mini-erp-vp18.onrender.com](https://mini-erp-vp18.onrender.com)** | `Active` (Render) |
+| **📡 Health Check Endpoint** | **[https://mini-erp-vp18.onrender.com/api/health](https://mini-erp-vp18.onrender.com/api/health)** | `200 OK` |
+| **📦 GitHub Repository** | **[https://github.com/souravsinghrajput23/Mini-ERP](https://github.com/souravsinghrajput23/Mini-ERP)** | `main` |
+
+---
+
+FlowLedger is a modern B2B SaaS Operations Command Center and Mini ERP + CRM portal designed for wholesale, manufacturing, and distribution enterprises. Built with **React 19, TypeScript, Vite, Tailwind CSS, Node.js, Express, Prisma ORM, and PostgreSQL/SQLite**, it eliminates disjointed spreadsheets by connecting customer relationship workflows, multi-warehouse inventory ledgers, and atomic sales challan fulfillment.
 
 ---
 
