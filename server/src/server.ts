@@ -65,8 +65,9 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// API Routes
+// API Routes (Mounted on /api and root / for resilience)
 app.use('/api', routes);
+app.use('/', routes);
 
 // 404 Catch-all Handler
 app.use('*', (req, res) => {
